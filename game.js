@@ -44,6 +44,7 @@ mouse = (function (target) {
   };
 }(document));
 
+
 function makeBug(x, y) {
   var position = {
     x: x,
@@ -60,7 +61,7 @@ function makeBug(x, y) {
   targets[1] = {x: 200, y: 450};
   targets[2] = {x: 100, y: 500};
   targets[3] = {x: 300, y: 200};
-  targets[4] = {x: 450, y: 400};
+  targets[4] = {x: 100, y: 300};
 
   var dis1 = Math.pow(targets[0].x - position.x, 2) + Math.pow(targets[0].y - position.y, 2);
   var dis2 = Math.pow(targets[1].x - position.x, 2) + Math.pow(targets[1].y - position.y, 2);
@@ -80,7 +81,27 @@ function makeBug(x, y) {
 
     ctx.beginPath();
     ctx.fillStyle = 'red';
-    ctx.arc(target.x, target.y, 2, 0, Math.PI * 2, true);
+    ctx.arc(targets[0].x, targets[0].y, 2, 0, Math.PI * 2, true);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.fillStyle = 'red';
+    ctx.arc(targets[1].x, targets[1].y, 2, 0, Math.PI * 2, true);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.fillStyle = 'red';
+    ctx.arc(targets[2].x, targets[2].y, 2, 0, Math.PI * 2, true);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.fillStyle = 'red';
+    ctx.arc(targets[3].x, targets[3].y, 2, 0, Math.PI * 2, true);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.fillStyle = 'red';
+    ctx.arc(targets[4].x, targets[4].y, 2, 0, Math.PI * 2, true);
     ctx.fill();
   }
 
@@ -112,6 +133,19 @@ function makeBug(x, y) {
   }
  
   function findNewTarget() {
+    var min = Math.min.apply(null, distances);
+    var shortest_index;
+   // var shortest_index = distances.indexOf(min);
+
+
+    for (var j = 0; j <= 5; j++) {
+      //if (distances[j] == min) {
+        //shortest_index = j;
+        //break;
+      //}
+    }
+
+    //var target = targets[j];
     var target = {
       x: Math.round(Math.random() * 400),
       y: Math.round(Math.random() * 600)
@@ -129,10 +163,10 @@ function makeBug(x, y) {
 gamePage = (function () {
 
   var entities = [];
-  var numOfBugs = 0;
+  var numOfBugs = 1;
 
   function start() {
-    for (var i = 0; i <= 20; i++) {
+    for (var i = 0; i <= numOfBugs; i++) {
       entities.push(makeBug(Math.floor((Math.random() * 400) + 1), 0));
     }
   }
