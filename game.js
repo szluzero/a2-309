@@ -54,6 +54,20 @@ function makeBug(x, y) {
   var speed = 2;
   var orientation = 0;
   var target = findNewTarget();
+  var target1, target2, target3, target4, target5;
+  var targets = [target1, target2, target3, target4, target5];
+  targets[0] = {x: 300, y: 500};
+  targets[1] = {x: 200, y: 450};
+  targets[2] = {x: 100, y: 500};
+  targets[3] = {x: 300, y: 200};
+  targets[4] = {x: 450, y: 400};
+
+  var dis1 = Math.pow(targets[0].x - position.x, 2) + Math.pow(targets[0].y - position.y, 2);
+  var dis2 = Math.pow(targets[1].x - position.x, 2) + Math.pow(targets[1].y - position.y, 2);
+  var dis3 = Math.pow(targets[2].x - position.x, 2) + Math.pow(targets[2].y - position.y, 2);
+  var dis4 = Math.pow(targets[3].x - position.x, 2) + Math.pow(targets[3].y - position.y, 2);
+  var dis5 = Math.pow(targets[4].x - position.x, 2) + Math.pow(targets[4].y - position.y, 2);
+  var distances = [dis1, dis2, dis3, dis4, dis5];
 
   function draw(ctx) {
     ctx.save();
@@ -75,7 +89,7 @@ function makeBug(x, y) {
     var x = target.x - position.x;
     var d2 = Math.pow(x, 2) + Math.pow(y, 2);
     if (d2 < 16) {
-      target = findNewTarget();
+      target = targets[0];//{x:0, y:0};
     }
     else {
       var angle = Math.atan2(y, x);
