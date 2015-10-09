@@ -1,5 +1,5 @@
 var canvas, surface, currPage, gamePage, mouse, fullCircle = Math.PI * 2;
-
+var food = 0;
 
 function beginLoop() {
   var frameID = 0;
@@ -45,7 +45,7 @@ mouse = (function (target) {
 }(document));
 
 
-function makeBug(x, y) {
+function makeBug(x, y, targets) {
   var position = {
     x: x,
     y: y
@@ -54,21 +54,9 @@ function makeBug(x, y) {
   var turnSpeed = fullCircle;
   var speed = 2;
   var orientation = 0;
-  var target = findNewTarget();
-  var target1, target2, target3, target4, target5;
-  var targets = [target1, target2, target3, target4, target5];
-  targets[0] = {x: 300, y: 500};
-  targets[1] = {x: 200, y: 450};
-  targets[2] = {x: 100, y: 500};
-  targets[3] = {x: 300, y: 200};
-  targets[4] = {x: 100, y: 300};
+  var distances = findDistances(targets, position);
+  var target = findNewTarget(targets, distances);
 
-  var dis1 = Math.pow(targets[0].x - position.x, 2) + Math.pow(targets[0].y - position.y, 2);
-  var dis2 = Math.pow(targets[1].x - position.x, 2) + Math.pow(targets[1].y - position.y, 2);
-  var dis3 = Math.pow(targets[2].x - position.x, 2) + Math.pow(targets[2].y - position.y, 2);
-  var dis4 = Math.pow(targets[3].x - position.x, 2) + Math.pow(targets[3].y - position.y, 2);
-  var dis5 = Math.pow(targets[4].x - position.x, 2) + Math.pow(targets[4].y - position.y, 2);
-  var distances = [dis1, dis2, dis3, dis4, dis5];
 
   function draw(ctx) {
     ctx.save();
@@ -78,8 +66,8 @@ function makeBug(x, y) {
     ctx.fillStyle = 'blue';
     ctx.fillRect(-5, -20, 10, 40);
     ctx.restore();
-
-    ctx.beginPath();
+	
+	ctx.beginPath();
     ctx.fillStyle = 'red';
     ctx.arc(targets[0].x, targets[0].y, 2, 0, Math.PI * 2, true);
     ctx.fill();
@@ -103,6 +91,7 @@ function makeBug(x, y) {
     ctx.fillStyle = 'red';
     ctx.arc(targets[4].x, targets[4].y, 2, 0, Math.PI * 2, true);
     ctx.fill();
+
   }
 
   function update(elapsed) {
@@ -110,7 +99,11 @@ function makeBug(x, y) {
     var x = target.x - position.x;
     var d2 = Math.pow(x, 2) + Math.pow(y, 2);
     if (d2 < 16) {
-      target = targets[0];//{x:0, y:0};
+	  var min = Math.min.apply(null, distances);
+	  var shortest_index = distances.indexOf(min);
+	  targets.splice(shortest_index, 1);
+      distances = findDistances(targets, position);
+      target = findNewTarget(targets, distances);
     }
     else {
       var angle = Math.atan2(y, x);
@@ -132,25 +125,22 @@ function makeBug(x, y) {
     }
   }
  
-  function findNewTarget() {
+ 
+  function findDistances(targets, position) {
+	  //var min = Math.min.apply(null, distances);
+      //var shortest_index = distances.indexOf(min);
+	  //distances[shortest_index] = 99999999;
+	  var newdistances = [];
+	  for (var i = 0; i <= targets.length - 1; i++) {
+	    newdistances.push(Math.pow(targets[i].x - position.x, 2) + Math.pow(targets[i].y - position.y, 2));
+	  }
+    return newdistances;
+  }
+ 
+  function findNewTarget(targets, distances) {
     var min = Math.min.apply(null, distances);
-    var shortest_index;
-   // var shortest_index = distances.indexOf(min);
-
-
-    for (var j = 0; j <= 5; j++) {
-      //if (distances[j] == min) {
-        //shortest_index = j;
-        //break;
-      //}
-    }
-
-    //var target = targets[j];
-    var target = {
-      x: Math.round(Math.random() * 400),
-      y: Math.round(Math.random() * 600)
-    };
-
+    var shortest_index = distances.indexOf(min);
+    var target = targets[shortest_index];
     return target;
   }
 
@@ -164,10 +154,19 @@ gamePage = (function () {
 
   var entities = [];
   var numOfBugs = 1;
+  var target1, target2, target3, target4, target5;
+  var targets = [target1, target2, target3, target4, target5];
+
+  targets[0] = {x: 300, y: 500};
+  targets[1] = {x: 200, y: 450};
+  targets[2] = {x: 100, y: 500};
+  targets[3] = {x: 300, y: 200};
+  targets[4] = {x: 100, y: 300};
 
   function start() {
-    for (var i = 0; i <= numOfBugs; i++) {
-      entities.push(makeBug(Math.floor((Math.random() * 400) + 1), 0));
+    
+	for (var i = 0; i <= numOfBugs; i++) {
+      entities.push(makeBug(Math.floor((Math.random() * 400) + 1), 0, targets));
     }
   }
 
@@ -185,7 +184,7 @@ gamePage = (function () {
 
     var entityIndex = entities.length - 1;
     for (;entityIndex != 0; entityIndex--) {
-      entities[entityIndex].update(elapsed);
+     entities[entityIndex].update(elapsed);
     }
   }
 
@@ -199,7 +198,7 @@ gamePage = (function () {
 
 currPage = (function (input) {
 
-    
+    var hue = 0;
     var transitioning = false;
     var wasButtonDown = false;
     var title = 'My Awesome Game';
