@@ -1,6 +1,15 @@
 var canvas, surface, currPage, gamePage, mouse, fullCircle = Math.PI * 2;
 var food = 0;
 
+  var target1, target2, target3, target4, target5;
+  var targets = [target1, target2, target3, target4, target5];
+
+  targets[0] = {x: 300, y: 500};
+  targets[1] = {x: 200, y: 450};
+  targets[2] = {x: 100, y: 500};
+  targets[3] = {x: 300, y: 200};
+  targets[4] = {x: 100, y: 300};
+
 function beginLoop() {
   var frameID = 0;
   var lastFrame = Date.now();
@@ -45,7 +54,16 @@ mouse = (function (target) {
 }(document));
 
 
-function makeBug(x, y, targets) {
+function makeBug(x, y) {
+  function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+      if ((new Date().getTime() - start) > milliseconds){
+        break;
+      }
+    }
+  }
+
   var position = {
     x: x,
     y: y
@@ -54,8 +72,9 @@ function makeBug(x, y, targets) {
   var turnSpeed = fullCircle;
   var speed = 2;
   var orientation = 0;
-  var distances = findDistances(targets, position);
-  var target = findNewTarget(targets, distances);
+  var distances = findDistances(position);
+  var target = findNewTarget(distances);
+
 
 
   function draw(ctx) {
@@ -67,34 +86,45 @@ function makeBug(x, y, targets) {
     ctx.fillRect(-5, -20, 10, 40);
     ctx.restore();
 	
-	ctx.beginPath();
-    ctx.fillStyle = 'red';
-    ctx.arc(targets[0].x, targets[0].y, 2, 0, Math.PI * 2, true);
-    ctx.fill();
+    if (targets[0] != null) {
+  	  ctx.beginPath();
+      ctx.fillStyle = 'red';
+      ctx.arc(targets[0].x, targets[0].y, 2, 0, Math.PI * 2, true);
+      ctx.fill();
+    }
 
-    ctx.beginPath();
-    ctx.fillStyle = 'red';
-    ctx.arc(targets[1].x, targets[1].y, 2, 0, Math.PI * 2, true);
-    ctx.fill();
+    if (targets[1] != null) {
+      ctx.beginPath();
+      ctx.fillStyle = 'red';
+      ctx.arc(targets[1].x, targets[1].y, 2, 0, Math.PI * 2, true);
+      ctx.fill();
+    }
 
-    ctx.beginPath();
-    ctx.fillStyle = 'red';
-    ctx.arc(targets[2].x, targets[2].y, 2, 0, Math.PI * 2, true);
-    ctx.fill();
+    if (targets[2] != null) {
+      ctx.beginPath();
+      ctx.fillStyle = 'red';
+      ctx.arc(targets[2].x, targets[2].y, 2, 0, Math.PI * 2, true);
+      ctx.fill();
+    }
 
-    ctx.beginPath();
-    ctx.fillStyle = 'red';
-    ctx.arc(targets[3].x, targets[3].y, 2, 0, Math.PI * 2, true);
-    ctx.fill();
+    if (targets[3] != null) {
+      ctx.beginPath();
+      ctx.fillStyle = 'red';
+      ctx.arc(targets[3].x, targets[3].y, 2, 0, Math.PI * 2, true);
+      ctx.fill();
+    }
 
-    ctx.beginPath();
-    ctx.fillStyle = 'red';
-    ctx.arc(targets[4].x, targets[4].y, 2, 0, Math.PI * 2, true);
-    ctx.fill();
+    if (targets[4] != null) {
+      ctx.beginPath();
+      ctx.fillStyle = 'red';
+      ctx.arc(targets[4].x, targets[4].y, 2, 0, Math.PI * 2, true);
+      ctx.fill();
+    }
 
   }
 
   function update(elapsed) {
+
     var y = target.y - position.y;
     var x = target.x - position.x;
     var d2 = Math.pow(x, 2) + Math.pow(y, 2);
@@ -102,8 +132,11 @@ function makeBug(x, y, targets) {
 	  var min = Math.min.apply(null, distances);
 	  var shortest_index = distances.indexOf(min);
 	  targets.splice(shortest_index, 1);
-      distances = findDistances(targets, position);
-      target = findNewTarget(targets, distances);
+      distances = findDistances(position);
+      target = findNewTarget(distances);
+      if (target == null) {
+        target = { x: 0, y: 0};
+      }
     }
     else {
       var angle = Math.atan2(y, x);
@@ -126,7 +159,7 @@ function makeBug(x, y, targets) {
   }
  
  
-  function findDistances(targets, position) {
+  function findDistances(position) {
 	  //var min = Math.min.apply(null, distances);
       //var shortest_index = distances.indexOf(min);
 	  //distances[shortest_index] = 99999999;
@@ -137,7 +170,7 @@ function makeBug(x, y, targets) {
     return newdistances;
   }
  
-  function findNewTarget(targets, distances) {
+  function findNewTarget(distances) {
     var min = Math.min.apply(null, distances);
     var shortest_index = distances.indexOf(min);
     var target = targets[shortest_index];
@@ -152,41 +185,56 @@ function makeBug(x, y, targets) {
 
 gamePage = (function () {
 
+  var ind = 0;
+  var count = 0;
+  var listofbugs = [];
   var entities = [];
-  var numOfBugs = 1;
-  var target1, target2, target3, target4, target5;
-  var targets = [target1, target2, target3, target4, target5];
+  var numOfBugs = 5;
+  var count2 = 50;
 
-  targets[0] = {x: 300, y: 500};
-  targets[1] = {x: 200, y: 450};
-  targets[2] = {x: 100, y: 500};
-  targets[3] = {x: 300, y: 200};
-  targets[4] = {x: 100, y: 300};
+  for (var i = 0; i <= numOfBugs; i++) {
+      listofbugs.push(makeBug(Math.floor((Math.random() * 400) + 1), 0));
+  }
+
 
   function start() {
-    
-	for (var i = 0; i <= numOfBugs; i++) {
-      entities.push(makeBug(Math.floor((Math.random() * 400) + 1), 0, targets));
-    }
+    entities.push(listofbugs[ind]); 
   }
 
   function draw(ctx) {
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    var entityIndex = entities.length - 1;
-    for (; entityIndex != 0; entityIndex--) {
+    var entityIndex = 0;
+    for (;entityIndex <= entities.length - 1; entityIndex++) {
       entities[entityIndex].draw(ctx);
     }
   }
 
   function update(elapsed) {
 
-    var entityIndex = entities.length - 1;
-    for (;entityIndex != 0; entityIndex--) {
+    if (count > 1 && ind < listofbugs.length - 1) {
+      if (count == 50) {
+        ind++;
+        entities.push(listofbugs[ind]);
+        count = 0;
+      }
+    }
+    var entityIndex = 0;
+    for (;entityIndex <= entities.length - 1; entityIndex++) {
      entities[entityIndex].update(elapsed);
     }
+    if (count < 50) {
+      count++;
+    }
   }
+
+
+  /**function createBugs(numOfBugs, entities, targets, i) {
+    for (var i = 0; i <= numOfBugs; i++) {
+      entities.push(makeBug(Math.floor((Math.random() * 400) + 1), 0, targets));
+    }
+  }**/
 
   return {
     draw: draw,
